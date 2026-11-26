@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lean Coffee</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Unbounded:wght@600;800&display=swap" rel="stylesheet">
+<style>
+/* VOICE: friendly facilitation tool, calm and readable from across a call
+   IDEA: a neon beach-city night — sunset sky over the board
+   PICTURE: the working board itself — glowing cards plus a large neon ring timer
+   COLOUR and TYPE: night violet, sunset pink→orange cards, cyan timer, gold accent; Unbounded titles, Manrope text
+   LAYOUT: sunset top bar (theme, timer), phase steps, then the three-column board */
+:root{color-scheme:dark;--bg:#170a2b;--ink:#fbeefe;--mut:#b9a3d6;--line:#3b2163;--col:#22103d;--barink:#fff6fb;--note:linear-gradient(135deg,#ff4fa0 0%,#ff8a4c 100%);--note2:#2c1550;--noteink:#1d0830;--brown:#ff3e9a;--acc:#ffd25a;--cyan:#2de2e6;--glass:rgba(20,6,40,.38)}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Manrope,system-ui,sans-serif;overflow-x:clip}
+.band{padding:clamp(20px,3vw,40px) max(4vw,16px)}
+.wrap{max-width:1240px;margin:0 auto}
+button,input,textarea{font:inherit}
+button{cursor:pointer;border:0;border-radius:10px;min-height:44px;padding:0 16px;font-weight:700}
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.bar{background:linear-gradient(180deg,#24093f 0%,#5b1470 45%,#c2306f 80%,#ff7a4a 100%);color:var(--barink)}
+.top{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:24px;align-items:center}
+.kick{font-weight:700;color:var(--acc);font-size:15px}
+h1{font:800 clamp(26px,3.6vw,42px)/1.1 Unbounded,Manrope,sans-serif;margin:6px 0 0;text-wrap:balance;text-shadow:0 2px 18px rgba(255,62,154,.45)}
+h1.empty{opacity:.55}
+.themein{width:100%;margin-top:10px;background:var(--glass);color:var(--barink);border:1px solid rgba(255,255,255,.25);border-radius:10px;padding:12px 14px;font-size:18px}
+.timer{display:flex;align-items:center;gap:18px}
+.ring{position:relative;width:132px;height:132px;flex:none}
+.ring svg{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg)}
+.ring .t{position:absolute;inset:0;display:grid;place-items:center;font-size:32px;font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap}
+.ring .t{text-shadow:0 0 14px rgba(45,226,230,.6)}.ring.low .t{color:#ff6fb5;text-shadow:0 0 14px rgba(255,62,154,.7)}.ring.zero .t{animation:pulse 1s infinite}
+@keyframes pulse{50%{opacity:.35}}
+.tctl{display:grid;gap:8px}
+.tctl button{white-space:nowrap;background:var(--glass);color:var(--barink);min-width:112px}
+.steps{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px;padding:0;list-style:none}
+.steps li{padding:6px 12px;border-radius:999px;background:var(--glass);color:#f1d9ef;font-size:14px;font-weight:600;white-space:nowrap}
+.steps li.on{background:var(--acc);color:var(--noteink)}
+.steps li.past{color:#c99cc6}
+.hint{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center;justify-content:space-between;margin-bottom:22px}
+.hint p{margin:0;font-size:17px;max-width:70ch}
+.acts{display:flex;flex-wrap:wrap;gap:8px}
+.pri{background:var(--brown);color:#fff}
+.sec{background:var(--col);color:var(--ink);border:1px solid var(--line)}
+.rec{outline:3px solid var(--acc);outline-offset:2px}
+.board{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;align-items:start}
+.col{background:var(--col);border:1px solid var(--line);border-radius:16px;padding:16px;min-height:220px}
+.col h2{font-size:17px;margin:0 0 12px;display:flex;justify-content:space-between;gap:8px}
+.col h2 span{color:var(--mut);font-weight:600}
+.empty-s{color:var(--mut);font-size:15px;margin:8px 2px}
+.add{display:flex;gap:8px;margin-bottom:14px}
+.add input{flex:1;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:10px;padding:10px 12px;font-size:16px}
+.add button{background:var(--brown);color:#fff}
+.notes{display:grid;gap:12px}
+.note{background:var(--note);color:var(--noteink);border-radius:4px 4px 14px 4px;padding:12px 14px 10px;box-shadow:0 8px 22px -10px rgba(255,62,154,.7)}
+.note.new{animation:drop .25s ease-out}
+.notes .note:nth-child(3n+1){rotate:-.6deg}.notes .note:nth-child(3n+2){rotate:.5deg}
+@keyframes drop{from{opacity:0;translate:0 -6px}}
+.note p{margin:0;font:700 18px/1.35 Manrope,system-ui,sans-serif;overflow-wrap:anywhere}
+.meta{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:8px;font-size:14px;font-weight:700}
+.dots{display:flex;gap:4px;align-items:center}
+.dot{width:13px;height:13px;border-radius:50%;background:var(--noteink)}
+.dot.o{background:transparent;border:2px solid rgba(29,8,48,.45)}
+.mini{min-height:36px;min-width:36px;padding:0 10px;background:rgba(29,8,48,.16);color:var(--noteink);border-radius:8px}
+.mini:disabled{opacity:.35;cursor:default}
+.x{background:transparent;color:rgba(29,8,48,.7);font-weight:600}
+.big{rotate:0deg!important}
+.big p{font-size:24px}
+.lbl{display:block;font-size:14px;font-weight:700;margin:14px 0 6px;color:var(--mut)}
+textarea{width:100%;min-height:110px;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:10px;padding:10px 12px;font-size:16px;resize:vertical}
+.notetext{white-space:pre-wrap;margin:0;font-size:15px}
+.note p.notetext{font:400 14px/1.45 Manrope,system-ui,sans-serif;color:var(--mut)}
+.ask{margin-top:14px;background:var(--bg);border:2px solid var(--cyan);box-shadow:0 0 20px -6px rgba(45,226,230,.6);border-radius:14px;padding:14px}
+.ask h3{margin:0 0 10px;font-size:18px}
+.thumbs{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.thumbs button{background:var(--col);color:var(--ink);border:1px solid var(--line)}
+.thumbs button.me{background:var(--brown);color:#fff;border-color:transparent}
+.count{margin:12px 0 8px;font-size:15px}
+.done-l{display:grid;gap:10px}
+.done-l .note{background:var(--note2);color:var(--ink);box-shadow:none;border:1px solid var(--line)}
+.done-l .note p{font-size:16px}
+.how{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin:0;padding:0;list-style:none;counter-reset:s}
+.how li{background:var(--col);border-radius:14px;padding:16px}
+.how b{display:block;font-size:17px;margin-bottom:4px}
+.how .tm{font:800 20px/1 Unbounded,Manrope,sans-serif;color:var(--acc)}
+.how p{margin:6px 0 0;font-size:15px;color:var(--mut)}
+.share{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:14px;font-size:14px;color:#ffe3f1}.share code{background:var(--glass);color:var(--barink);padding:8px 10px;border-radius:8px;font-size:13px;overflow-wrap:anywhere;max-width:100%}.share button{background:var(--acc);color:var(--noteink);min-height:38px}
+.msg{max-width:640px;margin:40px auto;text-align:center;font-size:18px}
+.small{font-size:13px;color:var(--mut);margin-top:18px}
+@media(max-width:900px){.board{grid-template-columns:minmax(0,1fr)}.how{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
+@media(max-width:600px){.top{grid-template-columns:minmax(0,1fr)}.ring{width:108px;height:108px}.ring .t{font-size:26px}.how{grid-template-columns:minmax(0,1fr)}.tctl{grid-template-columns:repeat(3,auto)}.tctl button{min-width:0}}
+@media(prefers-reduced-motion:reduce){.note{animation:none}.ring.zero .t{animation:none}}
+</style>
+</head>
+<body>
+<div id="app"><div class="msg">Подключаемся к доске…</div></div>
+<script type="module">
+import {joinRoom, roles} from 'https://cdn.jsdelivr.net/npm/trystero@0.27.0/+esm';
+const app=document.getElementById('app');
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const T={topics:300,vote:180,discuss:480};
+const PH=[['intro','Старт'],['topics','Темы · 5 мин'],['vote','Голосование · 3 мин'],['discuss','Обсуждение · 8 мин'],['done','Итоги']];
+const VOTES=3,APP='lean-coffee-board.github.io/v1';
+const rid=()=>Array.from(crypto.getRandomValues(new Uint8Array(9)),b=>b.toString(36).padStart(2,'0')).join('').slice(0,14);
+const fresh=theme=>({sid:rid(),theme:theme||'',phase:'intro',topicId:null,ext:0,check:false,endsAt:null,left:null,dur:0,topics:{},votes:{},thumbs:{},gone:{}});
+let room,board,mine,myUid=null,host=false,B=null,joined=false,err='',copied='',lastRem=null,noteTimer=null,lastHtml='',link='';
+const seen=new Set();
+
+/* ---------- derived ---------- */
+const list=()=>Object.entries(B.topics||{}).filter(([id])=>!(B.gone||{})[id]).map(([id,t])=>({id,...t}));
+const tally=()=>{const m={};for(const p of Object.values(B.votes||{}))for(const[k,n]of Object.entries(p||{}))m[k]=(m[k]||0)+n;return m};
+const myState=()=>{const s=mine&&mine.get();return s&&s.sid===B.sid?s:{sid:B.sid,topics:[],picks:{},thumb:null}};
+const myPicks=()=>({...(myState().picks||{})});
+const used=p=>Object.values(p).reduce((a,b)=>a+(+b||0),0);
+const voters=()=>Object.values(B.votes||{}).filter(p=>used(p||{})>0).length;
+const ranked=()=>{const m=tally();return list().filter(t=>t.status!=='done'&&t.id!==B.topicId).map(t=>({...t,v:m[t.id]||0})).sort((a,b)=>b.v-a.v||a.at-b.at)};
+const rem=()=>B.endsAt?Math.max(0,Math.ceil((B.endsAt-Date.now())/1000)):(B.left!=null?B.left:(B.dur||0));
+const fmt=s=>Math.floor(s/60)+':'+String(s%60).padStart(2,'0');
+const tkey=()=>B.sid+'|'+B.topicId+'|'+B.ext;
+const asking=()=>B.phase==='discuss'&&B.topicId&&(B.check||(B.dur>0&&rem()===0));
+const online=()=>room?Object.keys(room.getUsers()).length+1:1;
+
+/* ---------- host writes ---------- */
+const setB=fn=>{if(!host)return;board.set(prev=>{const n=typeof fn==='function'?fn(prev):{...prev,...fn};try{localStorage.setItem('lc-board:'+link,JSON.stringify(n))}catch(e){}return n})};
+function go(phase,extra){const d=T[phase]||0;setB(p=>({...p,phase,check:false,dur:d,left:null,endsAt:d?Date.now()+d*1000:null,...extra}))}
+function startTopic(id){go('discuss',{topicId:id,ext:0})}
+const markDone=p=>p.topicId&&p.topics[p.topicId]?{...p.topics,[p.topicId]:{...p.topics[p.topicId],status:'done'}}:p.topics;
+function nextTopic(){setB(p=>{const topics=markDone(p);const m={};for(const v of Object.values(p.votes||{}))for(const[k,n]of Object.entries(v))m[k]=(m[k]||0)+n;
+  const r=Object.entries(topics).filter(([id,t])=>t.status!=='done'&&!p.gone[id]&&m[id]>0).sort((a,b)=>m[b[0]]-m[a[0]]||a[1].at-b[1].at);
+  if(r.length)return{...p,topics,phase:'discuss',topicId:r[0][0],ext:0,check:false,dur:T.discuss,left:null,endsAt:Date.now()+T.discuss*1000};
+  return{...p,topics,phase:'done',topicId:null,check:false,endsAt:null,left:null,dur:0}})}
+function extend(min){setB(p=>({...p,ext:(p.ext||0)+1,check:false,dur:min*60,left:null,endsAt:Date.now()+min*60000}))}
+
+/* host merges what participants send through their own state slots */
+function merge(uid,v){
+  if(!host||!B||!v||v.sid!==B.sid)return;
+  const fn=p=>{if(v.sid!==p.sid)return p;let topics=p.topics,votes=p.votes,thumbs=p.thumbs,ch=false;
+    if(p.phase==='intro'||p.phase==='topics'){const ids=new Set();topics={...topics};
+      for(const x of (Array.isArray(v.topics)?v.topics:[]).slice(0,30)){if(!x||typeof x.id!=='string'||!/^[a-z0-9]{6,20}$/.test(x.id))continue;ids.add(x.id);
+        const text=String(x.text||'').trim().slice(0,200);if(!text||p.gone[x.id])continue;
+        if(!topics[x.id]){topics[x.id]={text,by:uid,at:Math.min(+x.at||Date.now(),Date.now()),status:'open',note:''};ch=true}}
+      for(const[id,t]of Object.entries(topics))if(t.by===uid&&!ids.has(id)&&t.status==='open'){delete topics[id];ch=true}}
+    if(p.phase==='vote'){const clean={};let left=VOTES;
+      for(const[k,n]of Object.entries(v.picks||{})){const c=Math.max(0,Math.min(left,Math.floor(+n)||0));if(c&&p.topics[k]&&!p.gone[k]){clean[k]=c;left-=c}}
+      if(JSON.stringify(clean)!==JSON.stringify(p.votes[uid]||{})){votes={...votes,[uid]:clean};ch=true}}
+    const key=p.sid+'|'+p.topicId+'|'+p.ext;
+    if(v.thumb&&v.thumb.key===key&&(v.thumb.v==='up'||v.thumb.v==='down')&&(!thumbs[uid]||thumbs[uid].key!==key||thumbs[uid].v!==v.thumb.v)){thumbs={...thumbs,[uid]:{key,v:v.thumb.v}};ch=true}
+    return ch?{...p,topics,votes,thumbs}:p};
+  if(fn(B)!==B)setB(fn)}
+const mergeAll=()=>{if(!host||!mine)return;for(const[uid,v]of Object.entries(mine.getAll()))merge(uid,v)};
+
+/* ---------- participant writes ---------- */
+const setMine=fn=>mine.set(()=>fn(myState())).then(()=>{if(host)merge(myUid,mine.get())});
+function addTopic(text){text=text.trim().slice(0,200);if(!text)return;setMine(s=>({...s,topics:[...s.topics,{id:rid(),text,at:Date.now()}].slice(-30)}))}
+function delTopic(id){if(host&&B.topics[id]&&B.topics[id].by!==myUid){setB(p=>{const t={...p.topics};delete t[id];return{...p,topics:t,gone:{...p.gone,[id]:1}}});return}
+  setMine(s=>({...s,topics:s.topics.filter(t=>t.id!==id)}))}
+function setPick(id,d){const p=myPicks(),n=(p[id]||0)+d;if(n<0||(d>0&&used(p)>=VOTES))return;if(n)p[id]=n;else delete p[id];setMine(s=>({...s,picks:p}))}
+function thumb(v){setMine(s=>({...s,thumb:{key:tkey(),v}}))}
+
+function summary(){const done=list().filter(t=>t.status==='done'),m=tally();
+  return['Lean Coffee'+(B.theme?': '+B.theme:''),'',...done.map((t,i)=>(i+1)+'. '+t.text+' ('+(m[t.id]||0)+' гол.)'+(t.note?'\n   '+t.note.replace(/\n/g,'\n   '):''))].join('\n')}
+
+/* ---------- view ---------- */
+const plural=n=>n%10===1&&n%100!==11?'голос':[2,3,4].includes(n%10)&&![12,13,14].includes(n%100)?'голоса':'голосов';
+function card(t,mode){
+  const m=tally(),n=m[t.id]||0;let meta='';
+  if(mode==='topics'){meta=t.by===myUid||host?`<span></span><button class="mini x" data-a="del" data-id="${esc(t.id)}">Удалить</button>`:''}
+  else if(mode==='vote'){const p=myPicks(),k=p[t.id]||0,full=used(p)>=VOTES;
+    meta=`<span class="dots" aria-label="Ваших голосов: ${k}">${Array.from({length:VOTES},(_,i)=>`<i class="dot${i<k?'':' o'}"></i>`).join('')}</span>
+    <span class="acts"><button class="mini" data-a="vm" data-id="${esc(t.id)}" ${k?'':'disabled'} aria-label="Убрать голос">−</button><button class="mini" data-a="vp" data-id="${esc(t.id)}" ${full?'disabled':''} aria-label="Добавить голос">+</button></span>`}
+  else if(mode==='todo'){meta=`<span>${n} ${plural(n)}</span>${host?`<button class="mini" data-a="pick" data-id="${esc(t.id)}">Обсудить сейчас</button>`:''}`}
+  const isNew=!seen.has(t.id);seen.add(t.id);
+  return `<div class="note${isNew?' new':''}"><p>${esc(t.text)}</p>${meta?`<div class="meta">${meta}</div>`:''}</div>`}
+
+function current(){
+  const t=B.topics[B.topicId];if(!t)return '<p class="empty-s">Тема не выбрана.</p>';
+  const m=tally(),k=tkey(),hs=Object.values(B.thumbs||{}).filter(h=>h.key===k),up=hs.filter(h=>h.v==='up').length,dn=hs.filter(h=>h.v==='down').length;
+  const my=myState().thumb,mv=my&&my.key===k?my.v:null,rec=!hs.length?'':up>dn?'5':up===dn?'2':'next';
+  let ask='';
+  if(asking())ask=`<div class="ask"><h3>Продолжаем эту тему?</h3>
+    <div class="thumbs"><button data-a="up" class="${mv==='up'?'me':''}">Продолжаем</button><button data-a="down" class="${mv==='down'?'me':''}">Дальше</button></div>
+    <p class="count">Продолжаем: <b>${up}</b> · Дальше: <b>${dn}</b></p>
+    ${host?`<div class="acts"><button class="sec ${rec==='5'?'rec':''}" data-a="e5">Ещё 5 мин</button><button class="sec ${rec==='2'?'rec':''}" data-a="e2">Ещё 2 мин</button><button class="pri ${rec==='next'?'rec':''}" data-a="next">Следующая тема</button></div>
+    <p class="small" style="margin-top:8px">Большинство «продолжаем» — 5 минут, поровну — 2 минуты, большинство «дальше» — следующая тема. Рекомендация подсвечена.</p>`:''}</div>`;
+  const note=host?`<label class="lbl" for="note">Итоги и договорённости</label><textarea id="note" data-id="${esc(B.topicId)}" placeholder="Что решили, кто что делает">${esc(t.note||'')}</textarea>`
+    :(t.note?`<span class="lbl">Итоги и договорённости</span><p class="notetext">${esc(t.note)}</p>`:'');
+  return `<div class="note big"><p>${esc(t.text)}</p><div class="meta"><span>${m[B.topicId]||0} гол.</span>${B.ext?`<span>продление ${B.ext}</span>`:''}</div></div>${note}${ask}`}
+
+function view(){
+  if(err)return `<div class="msg">${esc(err)}</div>`;
+  if(!joined||!B||!B.sid)return `<div class="msg">${joined?'Ждём ведущего. Доска появится, как только он откроет эту ссылку.':'Подключаемся к доске…'}</div>`;
+  const ph=B.phase,idx=PH.findIndex(p=>p[0]===ph),r=rem(),dur=B.dur||0,C=2*Math.PI*58,off=dur?C*(1-r/dur):C;
+  const rc=dur&&r===0?'zero':dur&&r<=60?'low':'';
+  const share=host?`<div class="share"><span>Ссылка для участников</span><code>${esc(link)}</code><button data-a="link">${copied==='link'?'Скопировано':'Копировать'}</button></div>`:'';
+  const head=`<header class="bar band"><div class="wrap"><div class="top"><div><div class="kick">Lean Coffee · в комнате ${online()}</div>
+    ${host&&ph==='intro'?`<input id="theme" class="themein" maxlength="120" placeholder="Общая тема встречи" value="${esc(B.theme)}" aria-label="Общая тема встречи">`:`<h1 class="${B.theme?'':'empty'}">${esc(B.theme||'Общая тема не задана')}</h1>`}${share}</div>
+    <div class="timer"><div class="ring ${rc}" id="ring"><svg viewBox="0 0 132 132" aria-hidden="true"><circle cx="66" cy="66" r="58" fill="none" stroke="rgba(20,6,40,.45)" stroke-width="10"/><circle id="arc" cx="66" cy="66" r="58" fill="none" stroke="${rc?'#ff3e9a':'#2de2e6'}" stroke-width="10" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${off}"/></svg><div class="t" id="tm" role="timer">${dur?fmt(r):'—'}</div></div>
+    ${host&&dur?`<div class="tctl">${B.endsAt?`<button data-a="pause">Пауза</button>`:`<button data-a="resume">Пуск</button>`}<button data-a="plus">+1 мин</button><button data-a="stop">Стоп</button></div>`:''}</div></div>
+    <ol class="steps">${PH.map((p,i)=>`<li class="${i===idx?'on':i<idx?'past':''}">${p[1]}</li>`).join('')}</ol></div></header>`;
+  const left=VOTES-used(myPicks());
+  const hints={intro:'Скоро начнём. Вот как пройдёт встреча.',topics:'Добавляйте темы, которые хотите обсудить: по одной на карточку.',vote:`У вас ${VOTES} голоса, можно отдать несколько одной теме. Осталось: ${left}. Проголосовали: ${voters()}.`,discuss:'Обсуждаем темы по числу голосов. 8 минут на тему, потом решаем, продолжать ли.',done:'Сессия завершена.'};
+  const cp=`<button class="sec" data-a="copy">${copied==='sum'?'Скопировано':'Скопировать итоги'}</button>`;
+  const pa={intro:`<button class="pri" data-a="toTopics">Начать сбор тем · 5 мин</button>`,topics:`<button class="pri" data-a="toVote">К голосованию · 3 мин</button>`,
+    vote:`<button class="pri" data-a="toDiscuss">Начать обсуждение</button>`,
+    discuss:`${asking()?'':`<button class="sec" data-a="ask">Решаем: продолжаем?</button>`}<button class="sec" data-a="next">Следующая тема</button><button class="sec" data-a="finish">Завершить</button>`,
+    done:`${cp}<button class="pri" data-a="new">Новая сессия</button>`};
+  const acts=host?pa[ph]:(ph==='done'?cp:'');
+  let body;
+  if(ph==='intro')body=`<ol class="how">
+    <li><span class="tm">5 мин</span><b>Темы</b><p>Каждый пишет, о чём хочет поговорить в рамках общей темы.</p></li>
+    <li><span class="tm">3 мин</span><b>Голосование</b><p>У каждого 3 голоса. Можно все на одну тему.</p></li>
+    <li><span class="tm">→</span><b>К обсуждению</b><p>Темы выстраиваются по числу голосов.</p></li>
+    <li><span class="tm">8 мин</span><b>Обсуждение</b><p>Одна тема за раз, ведущий записывает итоги.</p></li>
+    <li><span class="tm">5 / 2</span><b>Продолжаем?</b><p>Большинство «за» — ещё 5 минут, поровну — ещё 2, иначе следующая тема.</p></li></ol>
+    ${host?'<p class="small">Вы ведущий: впишите тему, отправьте ссылку участникам и нажмите «Начать сбор тем». Кнопки управления есть только у вас. Ссылка постоянная, её можно использовать на каждой встрече.</p>':''}`;
+  else{
+    const all=list(),open=all.filter(t=>t.status!=='done'&&t.id!==B.topicId),done=all.filter(t=>t.status==='done'),disc=ph==='discuss'||ph==='done';
+    const ls=ph==='topics'?[...open].sort((a,b)=>b.at-a.at):disc?ranked():[...open].sort((a,b)=>a.at-b.at);
+    const mode=ph==='topics'?'topics':ph==='vote'?'vote':'todo';
+    const pending=ph==='topics'?myState().topics.filter(x=>!B.topics[x.id]).length:0;
+    body=`<div class="board"><section class="col"><h2>${disc?'К обсуждению':'Темы'}<span>${ls.length}</span></h2>
+      ${ph==='topics'?`<form class="add" id="addf"><input id="nt" maxlength="200" placeholder="Новая тема" aria-label="Новая тема" autocomplete="off"><button>Добавить</button></form>${pending?`<p class="small" style="margin:0 0 10px">Отправляем ведущему: ${pending}</p>`:''}`:''}
+      <div class="notes">${ls.map(t=>card(t,mode)).join('')||`<p class="empty-s">${ph==='topics'?'Пока ни одной темы.':'Темы закончились.'}</p>`}</div></section>
+      <section class="col"><h2>Обсуждаем</h2>${ph==='discuss'?current():`<p class="empty-s">${ph==='done'?'Обсуждение завершено.':'Начнём после голосования.'}</p>`}</section>
+      <section class="col"><h2>Обсудили<span>${done.length}</span></h2><div class="done-l">${done.map(t=>`<div class="note"><p>${esc(t.text)}</p>${t.note?`<p class="notetext" style="margin-top:6px">${esc(t.note)}</p>`:''}</div>`).join('')||'<p class="empty-s">Пока ничего.</p>'}</div></section></div>`}
+  return head+`<main class="band"><div class="wrap"><div class="hint"><p>${esc(hints[ph])}</p>${acts?`<div class="acts">${acts}</div>`:''}</div>${body}</div></main>`}
+
+/* ---------- render without flicker ---------- */
+function sameAttrs(a,b){if(a.attributes.length!==b.attributes.length)return false;for(const x of a.attributes)if(b.getAttribute(x.name)!==x.value)return false;return true}
+function morph(o,n){const oc=[...o.childNodes],nc=[...n.childNodes];
+  for(let i=0;i<nc.length;i++){const a=oc[i],b=nc[i];
+    if(!a){o.appendChild(b);continue}
+    if(a.nodeType!==b.nodeType||a.nodeName!==b.nodeName){o.replaceChild(b,a);continue}
+    if(a.nodeType===3){if(a.nodeValue!==b.nodeValue)a.nodeValue=b.nodeValue;continue}
+    if(a.nodeType!==1)continue;
+    if(!sameAttrs(a,b)){for(const x of [...a.attributes])if(!b.hasAttribute(x.name))a.removeAttribute(x.name);for(const x of b.attributes)if(a.getAttribute(x.name)!==x.value)a.setAttribute(x.name,x.value)}
+    if((a.tagName==='INPUT'||a.tagName==='TEXTAREA')&&a===document.activeElement)continue;
+    if(a.tagName==='TEXTAREA'){if(a.value!==b.value)a.value=b.value;continue}
+    if(a.tagName==='INPUT'){if(b.hasAttribute('value')&&a.value!==b.getAttribute('value'))a.value=b.getAttribute('value');continue}
+    morph(a,b)}
+  for(let i=oc.length-1;i>=nc.length;i--)oc[i].remove()}
+function render(){const h=view();if(h===lastHtml)return;lastHtml=h;const t=document.createElement('template');t.innerHTML=h;const d=document.createElement('div');d.appendChild(t.content);morph(app,d)}
+
+/* ---------- events ---------- */
+async function copy(text,tag){try{await navigator.clipboard.writeText(text);copied=tag}catch(e){copied=''}render();setTimeout(()=>{copied='';render()},2000)}
+app.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b||b.disabled||!B)return;const a=b.dataset.a,id=b.dataset.id;
+  if(a==='copy')return copy(summary(),'sum');if(a==='link')return copy(link,'link');
+  const hostActs={toTopics:()=>go('topics'),toVote:()=>go('vote'),
+    toDiscuss:()=>{const r=ranked();r.length?startTopic(r[0].id):setB({phase:'done',endsAt:null,left:null,dur:0})},
+    ask:()=>setB({check:true,endsAt:null,left:0}),next:nextTopic,e5:()=>extend(5),e2:()=>extend(2),
+    finish:()=>setB(p=>({...p,topics:markDone(p),phase:'done',topicId:null,check:false,endsAt:null,left:null,dur:0})),
+    new:()=>setB(p=>fresh(p.theme)),pause:()=>setB({left:rem(),endsAt:null}),resume:()=>setB({endsAt:Date.now()+rem()*1000,left:null}),
+    plus:()=>setB(p=>p.endsAt?{...p,endsAt:Math.max(p.endsAt,Date.now())+60000,dur:p.dur+60,check:false}:{...p,left:rem()+60,dur:p.dur+60,check:false}),
+    stop:()=>setB({endsAt:null,left:0}),pick:()=>setB(p=>({...p,topics:markDone(p),phase:'discuss',topicId:id,ext:0,check:false,dur:T.discuss,left:null,endsAt:Date.now()+T.discuss*1000}))};
+  const acts={del:()=>delTopic(id),vp:()=>setPick(id,1),vm:()=>setPick(id,-1),up:()=>thumb('up'),down:()=>thumb('down')};
+  if(hostActs[a]){if(host)hostActs[a]()}else if(acts[a])acts[a]()});
+app.addEventListener('submit',e=>{if(e.target.id!=='addf')return;e.preventDefault();const i=document.getElementById('nt');addTopic(i.value);i.value='';i.focus()});
+app.addEventListener('change',e=>{if(e.target.id==='theme'&&host){const v=e.target.value.trim().slice(0,120);if(v!==B.theme)setB({theme:v})}});
+app.addEventListener('input',e=>{if(e.target.id!=='note'||!host)return;const id=e.target.dataset.id,v=e.target.value.slice(0,4000);clearTimeout(noteTimer);
+  noteTimer=setTimeout(()=>setB(p=>p.topics[id]?{...p,topics:{...p.topics,[id]:{...p.topics[id],note:v}}}:p),600)});
+setInterval(()=>{if(!B||!B.sid)return;const r=rem(),tm=document.getElementById('tm'),arc=document.getElementById('arc'),ring=document.getElementById('ring');
+  if(tm&&B.dur){tm.textContent=fmt(r);arc.setAttribute('stroke-dashoffset',String(2*Math.PI*58*(1-r/B.dur)));const c=r===0?'zero':r<=60?'low':'';ring.className='ring '+c;arc.setAttribute('stroke',c?'#ff3e9a':'#2de2e6')}
+  if(lastRem!==null&&lastRem>0&&r===0){lastHtml='';render()}lastRem=r},250);
+
+/* ---------- connect ---------- */
+render();
+(async()=>{
+  try{
+    const r=new URLSearchParams(location.search).get('r');
+    room=r?joinRoom({appId:APP,use:[roles()]},r):joinRoom({appId:APP,use:[roles({selfAsAdmin:true})]},rid());
+    room.onError(e=>{console.warn(e);if(e&&e.code==='room-full'){err='Комната заполнена.';render()}});
+    const self=await room.getSelf();myUid=self.userId;host=!!self.isAdmin;
+    link=location.origin+location.pathname+'?r='+encodeURIComponent(self.roomId);
+    if(!r)history.replaceState(null,'','?r='+encodeURIComponent(self.roomId));
+    board=room.makeState('board',null,{maxBytes:400000});
+    mine=room.makeUserState('mine',null,{maxBytes:40000});
+    board.onChange(v=>{const ch=!B||!v||B.sid!==v.sid||B.phase!==v.phase||B.topicId!==v.topicId||B.ext!==v.ext;B=v;render();if(host&&ch)mergeAll()},{replay:true});
+    mine.onChange((v,ctx)=>{if(host&&!ctx.removed)merge(ctx.userId,v);render()},{replay:true});
+    room.onUserJoin(()=>render());room.onUserLeave(()=>render());
+    await room.ready;joined=true;B=board.get();
+    if(host&&(!B||!B.sid)){let saved=null;try{saved=JSON.parse(localStorage.getItem('lc-board:'+link))}catch(e){}
+      await board.set(saved&&saved.sid?saved:fresh(''));B=board.get()}
+    render();mergeAll();
+  }catch(e){console.error(e);err='Не удалось подключиться к доске. Обновите страницу или попробуйте другой браузер.';render()}
+})();
+</script>
+
+</body>
+</html>
