@@ -257,7 +257,7 @@ app.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b||b.d
   if(hostActs[a]){if(host)hostActs[a]()}else if(acts[a])acts[a]()});
 app.addEventListener('submit',e=>{if(e.target.id!=='addf')return;e.preventDefault();const i=document.getElementById('nt');addTopic(i.value);i.value='';i.focus()});
 app.addEventListener('change',e=>{if(e.target.id==='theme'&&host){const v=e.target.value.trim().slice(0,120);if(v!==B.theme)setB({theme:v})}});
-app.addEventListener('input',e=>{if(e.target.id!=='note'||!host)return;const id=e.target.dataset.id,v=e.target.value.slice(0,4000);clearTimeout(noteTimer);
+app.addEventListener('input',e=>{if(e.target.id!=='note'||!host)return;const id=e.target.dataset.id,v=e.target.value.slice(0,1000);clearTimeout(noteTimer);
   noteTimer=setTimeout(()=>setB(p=>p.topics[id]?{...p,topics:{...p.topics,[id]:{...p.topics[id],note:v}}}:p),600)});
 setInterval(()=>{if(!B||!B.sid)return;const r=rem(),tm=document.getElementById('tm'),arc=document.getElementById('arc'),ring=document.getElementById('ring');
   if(tm&&B.dur){tm.textContent=fmt(r);arc.setAttribute('stroke-dashoffset',String(2*Math.PI*58*(1-r/B.dur)));const c=r===0?'zero':r<=60?'low':'';ring.className='ring '+c;arc.setAttribute('stroke',c?'#ff3e9a':'#2de2e6')}
@@ -273,8 +273,8 @@ render();
     const self=await room.getSelf();myUid=self.userId;host=!!self.isAdmin;
     link=location.origin+location.pathname+'?r='+encodeURIComponent(self.roomId);
     if(!r)history.replaceState(null,'','?r='+encodeURIComponent(self.roomId));
-    board=room.makeState('board',null,{maxBytes:400000});
-    mine=room.makeUserState('mine',null,{maxBytes:40000});
+    board=room.makeState('board',null,{maxBytes:65536});
+    mine=room.makeUserState('mine',null,{maxBytes:16384});
     board.onChange(v=>{const ch=!B||!v||B.sid!==v.sid||B.phase!==v.phase||B.topicId!==v.topicId||B.ext!==v.ext;B=v;render();if(host&&ch)mergeAll()},{replay:true});
     mine.onChange((v,ctx)=>{if(host&&!ctx.removed)merge(ctx.userId,v);render()},{replay:true});
     room.onUserJoin(()=>render());room.onUserLeave(()=>render());
