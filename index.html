@@ -111,7 +111,8 @@ const seen=new Set();
 /* ---------- derived ---------- */
 const list=()=>Object.entries(B.topics||{}).filter(([id])=>!(B.gone||{})[id]).map(([id,t])=>({id,...t}));
 const tally=()=>{const m={};for(const p of Object.values(B.votes||{}))for(const[k,n]of Object.entries(p||{}))m[k]=(m[k]||0)+n;return m};
-const myState=()=>{const s=mine&&mine.get();return s&&s.sid===B.sid?s:{sid:B.sid,topics:[],picks:{},thumb:null}};
+let localMine=null;
+const myState=()=>{if(localMine&&localMine.sid===B.sid)return localMine;const s=mine&&mine.get();return s&&s.sid===B.sid?s:{sid:B.sid,topics:[],picks:{},thumb:null}};
 const myPicks=()=>({...(myState().picks||{})});
 const used=p=>Object.values(p).reduce((a,b)=>a+(+b||0),0);
 const voters=()=>Object.values(B.votes||{}).filter(p=>used(p||{})>0).length;
@@ -152,7 +153,7 @@ function merge(uid,v){
 const mergeAll=()=>{if(!host||!mine)return;for(const[uid,v]of Object.entries(mine.getAll()))merge(uid,v)};
 
 /* ---------- participant writes ---------- */
-const setMine=fn=>mine.set(()=>fn(myState())).then(()=>{if(host)merge(myUid,mine.get())});
+const setMine=fn=>{const next=fn(myState());localMine=next;lastHtml='';render();return mine.set(()=>next).then(()=>{render();if(host)merge(myUid,next)}).catch(e=>console.warn(e))};
 function addTopic(text){text=text.trim().slice(0,200);if(!text)return;setMine(s=>({...s,topics:[...s.topics,{id:rid(),text,at:Date.now()}].slice(-30)}))}
 function delTopic(id){if(host&&B.topics[id]&&B.topics[id].by!==myUid){setB(p=>{const t={...p.topics};delete t[id];return{...p,topics:t,gone:{...p.gone,[id]:1}}});return}
   setMine(s=>({...s,topics:s.topics.filter(t=>t.id!==id)}))}
@@ -268,12 +269,12 @@ setInterval(()=>{if(!B||!B.sid)return;const r=rem(),tm=document.getElementById('
 render();
 (async()=>{
   try{
-    let r=new URLSearchParams(location.search).get('r');let mineRoom=null;try{mineRoom=localStorage.getItem('lc-my-room')}catch(e){}if(!r&&mineRoom)r=mineRoom;
-    const qs=new URLSearchParams(location.search);room=r?joinRoom({appId:APP,use:[roles()],...(qs.has('guest')?{identity:'none'}:{})},r):joinRoom({appId:APP,use:[roles({selfAsAdmin:true})]},rid());
+    let r=new URLSearchParams(location.search).get('r');let mineRoom=null;try{mineRoom=localStorage.getItem('lc-my-room')}catch(e){}if(!r&&mineRoom&&!new URLSearchParams(location.search).has('new'))r=mineRoom;
+    const qs=new URLSearchParams(location.search);room=r?joinRoom({appId:APP,use:[roles()],...(qs.has('guest')?{identity:'none'}:{})},r):joinRoom({appId:APP,use:[roles({selfAsAdmin:true})],...(qs.has('guest')?{identity:'none'}:{})},rid());
     room.onError(e=>{console.warn(e);if(e&&e.code==='room-full'){err='Комната заполнена.';render()}});
     const self=await room.getSelf();myUid=self.userId;host=!!self.isAdmin;
     link=location.origin+location.pathname+'?r='+encodeURIComponent(self.roomId);
-    if(host){try{localStorage.setItem('lc-my-room',self.roomId)}catch(e){}}if(new URLSearchParams(location.search).get('r')!==self.roomId&&host)history.replaceState(null,'','?r='+encodeURIComponent(self.roomId));
+    if(host&&!qs.has('guest')){try{localStorage.setItem('lc-my-room',self.roomId)}catch(e){}}if(new URLSearchParams(location.search).get('r')!==self.roomId&&host)history.replaceState(null,'','?r='+encodeURIComponent(self.roomId));
     board=room.makeState('board',null,{maxBytes:65536});
     mine=room.makeUserState('mine',null,{maxBytes:16384});
     board.onChange(v=>{const ch=!B||!v||B.sid!==v.sid||B.phase!==v.phase||B.topicId!==v.topicId||B.ext!==v.ext;B=v;render();if(host&&ch)mergeAll()},{replay:true});
