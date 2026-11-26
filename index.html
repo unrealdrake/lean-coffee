@@ -35,10 +35,18 @@ h1.empty{opacity:.55}
 @keyframes pulse{50%{opacity:.35}}
 .tctl{display:grid;gap:8px}
 .tctl button{white-space:nowrap;background:var(--glass);color:var(--barink);min-width:112px}
-.steps{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px;padding:0;list-style:none}
-.steps li{padding:6px 12px;border-radius:999px;background:var(--glass);color:#5a3a6e;font-size:14px;font-weight:600;white-space:nowrap}
-.steps li.on{background:#2a1238;color:#fff}
-.steps li.past{color:#9a7fae}
+.steps{display:flex;margin:24px 0 0;padding:0;list-style:none;max-width:780px}
+.steps li{flex:1;position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;color:#5a3a6e;min-width:0}
+.steps li::before{content:"";position:absolute;top:16px;right:50%;width:100%;height:3px;background:rgba(255,255,255,.65)}
+.steps li:first-child::before{display:none}
+.steps li.past::before,.steps li.on::before{background:#2a1238}
+.steps .n{position:relative;z-index:1;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.75);font-weight:800;font-size:14px}
+.steps li.past .n{background:#2a1238;color:#fff}
+.steps li.on .n{background:#e0307c;color:#fff;box-shadow:0 0 0 5px rgba(255,255,255,.7)}
+.steps .t{font-weight:700;font-size:14px;line-height:1.2}
+.steps .d{font-size:12px;opacity:.8;white-space:nowrap}
+.steps li.on .t{color:#2a1238}
+@media(max-width:600px){.steps .t{font-size:12px;white-space:nowrap}.steps .d{display:none}.steps li:not(.on) .t{visibility:hidden}}
 .hint{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center;justify-content:space-between;margin-bottom:22px}
 .hint p{margin:0;font-size:17px;max-width:70ch}
 .acts{display:flex;flex-wrap:wrap;gap:8px}
@@ -201,7 +209,7 @@ function view(){
     ${host&&ph==='intro'?`<input id="theme" class="themein" maxlength="120" placeholder="Общая тема встречи" value="${esc(B.theme)}" aria-label="Общая тема встречи">`:`<h1 class="${B.theme?'':'empty'}">${esc(B.theme||'Общая тема не задана')}</h1>`}${share}</div>
     <div class="timer"><div class="ring ${rc}" id="ring"><svg viewBox="0 0 132 132" aria-hidden="true"><circle cx="66" cy="66" r="58" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="10"/><circle id="arc" cx="66" cy="66" r="58" fill="none" stroke="${rc?'#e0307c':'#0fa9ad'}" stroke-width="10" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${off}"/></svg><div class="t" id="tm" role="timer">${dur?fmt(r):'—'}</div></div>
     ${host&&dur?`<div class="tctl">${B.endsAt?`<button data-a="pause">Пауза</button>`:`<button data-a="resume">Пуск</button>`}<button data-a="plus">+1 мин</button><button data-a="stop">Стоп</button></div>`:''}</div></div>
-    <ol class="steps">${PH.map((p,i)=>`<li class="${i===idx?'on':i<idx?'past':''}">${p[1]}</li>`).join('')}</ol></div></header>`;
+    <ol class="steps" aria-label="Этапы встречи">${PH.map((p,i)=>{const[t,d]=p[1].split(' · ');return `<li class="${i===idx?'on':i<idx?'past':''}"${i===idx?' aria-current="step"':''}><span class="n">${i<idx?'<svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M2.5 7.5l3 3 6-7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>':i+1}</span><span class="t">${t}</span>${d?`<span class="d">${d}</span>`:''}</li>`}).join('')}</ol></div></header>`;
   const left=VOTES-used(myPicks());
   const hints={intro:'Скоро начнём. Вот как пройдёт встреча.',topics:'Добавляйте темы, которые хотите обсудить: по одной на карточку.',vote:`У вас ${VOTES} голоса, можно отдать несколько одной теме. Осталось: ${left}. Тёмные точки — ваши голоса, розовые — других. Проголосовали: ${voters()}.`,discuss:'Обсуждаем темы по числу голосов. 8 минут на тему, потом решаем, продолжать ли.',done:'Сессия завершена.'};
   const cp=`<button class="sec" data-a="copy">${copied==='sum'?'Скопировано':'Скопировать итоги'}</button>`;
