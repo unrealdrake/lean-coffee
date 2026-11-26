@@ -2,6 +2,7 @@
 <html lang="ru">
 <head>
 <meta charset="utf-8">
+<meta http-equiv="Cache-Control" content="no-cache">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Lean Coffee</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -267,12 +268,12 @@ setInterval(()=>{if(!B||!B.sid)return;const r=rem(),tm=document.getElementById('
 render();
 (async()=>{
   try{
-    const r=new URLSearchParams(location.search).get('r');
+    let r=new URLSearchParams(location.search).get('r');let mineRoom=null;try{mineRoom=localStorage.getItem('lc-my-room')}catch(e){}if(!r&&mineRoom)r=mineRoom;
     const qs=new URLSearchParams(location.search);room=r?joinRoom({appId:APP,use:[roles()],...(qs.has('guest')?{identity:'none'}:{})},r):joinRoom({appId:APP,use:[roles({selfAsAdmin:true})]},rid());
     room.onError(e=>{console.warn(e);if(e&&e.code==='room-full'){err='Комната заполнена.';render()}});
     const self=await room.getSelf();myUid=self.userId;host=!!self.isAdmin;
     link=location.origin+location.pathname+'?r='+encodeURIComponent(self.roomId);
-    link=link;if(!r)history.replaceState(null,'','?r='+encodeURIComponent(self.roomId));
+    if(host){try{localStorage.setItem('lc-my-room',self.roomId)}catch(e){}}if(new URLSearchParams(location.search).get('r')!==self.roomId&&host)history.replaceState(null,'','?r='+encodeURIComponent(self.roomId));
     board=room.makeState('board',null,{maxBytes:65536});
     mine=room.makeUserState('mine',null,{maxBytes:16384});
     board.onChange(v=>{const ch=!B||!v||B.sid!==v.sid||B.phase!==v.phase||B.topicId!==v.topicId||B.ext!==v.ext;B=v;render();if(host&&ch)mergeAll()},{replay:true});
