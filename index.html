@@ -60,8 +60,9 @@ h1.empty{opacity:.55}
 @keyframes drop{from{opacity:0;translate:0 -6px}}
 .note p{margin:0;font:700 18px/1.35 Manrope,system-ui,sans-serif;overflow-wrap:anywhere}
 .meta{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:8px;font-size:14px;font-weight:700}
-.dots{display:flex;gap:4px;align-items:center}.tot{margin-left:8px;font-weight:600;opacity:.75;white-space:nowrap}
+.dots{display:flex;flex-wrap:wrap;gap:4px;align-items:center}.tot{margin-left:8px;font-weight:600;opacity:.75;white-space:nowrap}
 .dot{width:13px;height:13px;border-radius:50%;background:var(--noteink)}
+.dot.oth{background:#e0307c}
 .dot.o{background:transparent;border:2px solid rgba(29,8,48,.45)}
 .mini{min-height:36px;min-width:36px;padding:0 10px;background:rgba(29,8,48,.16);color:var(--noteink);border-radius:8px}
 .mini:disabled{opacity:.35;cursor:default}
@@ -168,8 +169,9 @@ const plural=n=>n%10===1&&n%100!==11?'голос':[2,3,4].includes(n%10)&&![12,1
 function card(t,mode){
   const m=tally(),n=m[t.id]||0;let meta='';
   if(mode==='topics'){meta=t.by===myUid||host?`<span></span><button class="mini x" data-a="del" data-id="${esc(t.id)}">Удалить</button>`:''}
-  else if(mode==='vote'){const p=myPicks(),k=p[t.id]||0,full=used(p)>=VOTES;
-    meta=`<span class="dots" aria-label="Ваших голосов: ${k}">${Array.from({length:VOTES},(_,i)=>`<i class="dot${i<k?'':' o'}"></i>`).join('')}<span class="tot">всего ${n}</span></span>
+  else if(mode==='vote'){const p=myPicks(),k=p[t.id]||0,full=used(p)>=VOTES,bm=((B.votes||{})[myUid]||{})[t.id]||0,others=Math.max(0,n-bm),tot=others+k;
+    const dots=Array.from({length:k},()=>'<i class="dot"></i>').join('')+Array.from({length:others},()=>'<i class="dot oth"></i>').join('');
+    meta=`<span class="dots" aria-label="Голосов: ${tot}, ваших: ${k}">${dots||'<span class="tot" style="margin:0">пока без голосов</span>'}${tot?`<span class="tot">${tot} ${plural(tot)}${k?` · ваших ${k}`:''}</span>`:''}</span>
     <span class="acts"><button class="mini" data-a="vm" data-id="${esc(t.id)}" ${k?'':'disabled'} aria-label="Убрать голос">−</button><button class="mini" data-a="vp" data-id="${esc(t.id)}" ${full?'disabled':''} aria-label="Добавить голос">+</button></span>`}
   else if(mode==='todo'){meta=`<span>${n} ${plural(n)}</span>${host?`<button class="mini" data-a="pick" data-id="${esc(t.id)}">Обсудить сейчас</button>`:''}`}
   const isNew=!seen.has(t.id);seen.add(t.id);
@@ -201,7 +203,7 @@ function view(){
     ${host&&dur?`<div class="tctl">${B.endsAt?`<button data-a="pause">Пауза</button>`:`<button data-a="resume">Пуск</button>`}<button data-a="plus">+1 мин</button><button data-a="stop">Стоп</button></div>`:''}</div></div>
     <ol class="steps">${PH.map((p,i)=>`<li class="${i===idx?'on':i<idx?'past':''}">${p[1]}</li>`).join('')}</ol></div></header>`;
   const left=VOTES-used(myPicks());
-  const hints={intro:'Скоро начнём. Вот как пройдёт встреча.',topics:'Добавляйте темы, которые хотите обсудить: по одной на карточку.',vote:`У вас ${VOTES} голоса, можно отдать несколько одной теме. Осталось: ${left}. Проголосовали: ${voters()}.`,discuss:'Обсуждаем темы по числу голосов. 8 минут на тему, потом решаем, продолжать ли.',done:'Сессия завершена.'};
+  const hints={intro:'Скоро начнём. Вот как пройдёт встреча.',topics:'Добавляйте темы, которые хотите обсудить: по одной на карточку.',vote:`У вас ${VOTES} голоса, можно отдать несколько одной теме. Осталось: ${left}. Тёмные точки — ваши голоса, розовые — других. Проголосовали: ${voters()}.`,discuss:'Обсуждаем темы по числу голосов. 8 минут на тему, потом решаем, продолжать ли.',done:'Сессия завершена.'};
   const cp=`<button class="sec" data-a="copy">${copied==='sum'?'Скопировано':'Скопировать итоги'}</button>`;
   const pa={intro:`<button class="pri" data-a="toTopics">Начать сбор тем · 5 мин</button>`,topics:`<button class="pri" data-a="toVote">К голосованию · 3 мин</button>`,
     vote:`<button class="pri" data-a="toDiscuss">Начать обсуждение</button>`,
