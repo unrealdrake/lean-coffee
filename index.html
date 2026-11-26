@@ -10,9 +10,9 @@
 /* VOICE: friendly facilitation tool, calm and readable from across a call
    IDEA: a neon beach-city night — sunset sky over the board
    PICTURE: the working board itself — glowing cards plus a large neon ring timer
-   COLOUR and TYPE: night violet, sunset pink→orange cards, cyan timer, gold accent; Unbounded titles, Manrope text
+   COLOUR and TYPE: daylight white, soft peach→pink→lilac sky, pastel cards, hot-pink actions, teal timer; Unbounded titles, Manrope text
    LAYOUT: sunset top bar (theme, timer), phase steps, then the three-column board */
-:root{color-scheme:dark;--bg:#170a2b;--ink:#fbeefe;--mut:#b9a3d6;--line:#3b2163;--col:#22103d;--barink:#fff6fb;--note:linear-gradient(135deg,#ff4fa0 0%,#ff8a4c 100%);--note2:#2c1550;--noteink:#1d0830;--brown:#ff3e9a;--acc:#ffd25a;--cyan:#2de2e6;--glass:rgba(20,6,40,.38)}
+:root{color-scheme:light;--bg:#ffffff;--ink:#2a1238;--mut:#7a6590;--line:#ecdff3;--col:#faf5fd;--barink:#2a1238;--note:linear-gradient(135deg,#ffd6e7 0%,#ffe3cc 100%);--note2:#ffffff;--noteink:#2a1238;--brown:#e0307c;--acc:#2a1238;--cyan:#0fa9ad;--glass:rgba(255,255,255,.5)}
 *{box-sizing:border-box;min-width:0}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Manrope,system-ui,sans-serif;overflow-x:clip}
 .band{padding:clamp(20px,3vw,40px) max(4vw,16px)}
@@ -20,24 +20,24 @@ body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Manrope,syste
 button,input,textarea{font:inherit}
 button{cursor:pointer;border:0;border-radius:10px;min-height:44px;padding:0 16px;font-weight:700}
 button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
-.bar{background:linear-gradient(180deg,#24093f 0%,#5b1470 45%,#c2306f 80%,#ff7a4a 100%);color:var(--barink)}
+.bar{background:linear-gradient(115deg,#ffb48f 0%,#ff9fc3 50%,#c9a6f5 100%);color:var(--barink)}
 .top{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:24px;align-items:center}
-.kick{font-weight:700;color:var(--acc);font-size:15px}
-h1{font:800 clamp(26px,3.6vw,42px)/1.1 Unbounded,Manrope,sans-serif;margin:6px 0 0;text-wrap:balance;text-shadow:0 2px 18px rgba(255,62,154,.45)}
+.kick{font-weight:700;color:#6b2a7e;font-size:15px}
+h1{font:800 clamp(26px,3.6vw,42px)/1.1 Unbounded,Manrope,sans-serif;margin:6px 0 0;text-wrap:balance}
 h1.empty{opacity:.55}
-.themein{width:100%;margin-top:10px;background:var(--glass);color:var(--barink);border:1px solid rgba(255,255,255,.25);border-radius:10px;padding:12px 14px;font-size:18px}
+.themein{width:100%;margin-top:10px;background:var(--glass);color:var(--barink);border:1px solid rgba(255,255,255,.8);border-radius:10px;padding:12px 14px;font-size:18px}
 .timer{display:flex;align-items:center;gap:18px}
 .ring{position:relative;width:132px;height:132px;flex:none}
 .ring svg{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg)}
 .ring .t{position:absolute;inset:0;display:grid;place-items:center;font-size:32px;font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap}
-.ring .t{text-shadow:0 0 14px rgba(45,226,230,.6)}.ring.low .t{color:#ff6fb5;text-shadow:0 0 14px rgba(255,62,154,.7)}.ring.zero .t{animation:pulse 1s infinite}
+.ring.low .t{color:#c4105f}.ring.zero .t{animation:pulse 1s infinite}
 @keyframes pulse{50%{opacity:.35}}
 .tctl{display:grid;gap:8px}
 .tctl button{white-space:nowrap;background:var(--glass);color:var(--barink);min-width:112px}
 .steps{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px;padding:0;list-style:none}
-.steps li{padding:6px 12px;border-radius:999px;background:var(--glass);color:#f1d9ef;font-size:14px;font-weight:600;white-space:nowrap}
-.steps li.on{background:var(--acc);color:var(--noteink)}
-.steps li.past{color:#c99cc6}
+.steps li{padding:6px 12px;border-radius:999px;background:var(--glass);color:#5a3a6e;font-size:14px;font-weight:600;white-space:nowrap}
+.steps li.on{background:#2a1238;color:#fff}
+.steps li.past{color:#9a7fae}
 .hint{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center;justify-content:space-between;margin-bottom:22px}
 .hint p{margin:0;font-size:17px;max-width:70ch}
 .acts{display:flex;flex-wrap:wrap;gap:8px}
@@ -53,13 +53,13 @@ h1.empty{opacity:.55}
 .add input{flex:1;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:10px;padding:10px 12px;font-size:16px}
 .add button{background:var(--brown);color:#fff}
 .notes{display:grid;gap:12px}
-.note{background:var(--note);color:var(--noteink);border-radius:4px 4px 14px 4px;padding:12px 14px 10px;box-shadow:0 8px 22px -10px rgba(255,62,154,.7)}
+.note{background:var(--note);color:var(--noteink);border-radius:4px 4px 14px 4px;padding:12px 14px 10px;box-shadow:0 1px 2px rgba(42,18,56,.08),0 6px 16px -10px rgba(224,48,124,.45)}
 .note.new{animation:drop .25s ease-out}
 .notes .note:nth-child(3n+1){rotate:-.6deg}.notes .note:nth-child(3n+2){rotate:.5deg}
 @keyframes drop{from{opacity:0;translate:0 -6px}}
 .note p{margin:0;font:700 18px/1.35 Manrope,system-ui,sans-serif;overflow-wrap:anywhere}
 .meta{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:8px;font-size:14px;font-weight:700}
-.dots{display:flex;gap:4px;align-items:center}
+.dots{display:flex;gap:4px;align-items:center}.tot{margin-left:8px;font-weight:600;opacity:.75;white-space:nowrap}
 .dot{width:13px;height:13px;border-radius:50%;background:var(--noteink)}
 .dot.o{background:transparent;border:2px solid rgba(29,8,48,.45)}
 .mini{min-height:36px;min-width:36px;padding:0 10px;background:rgba(29,8,48,.16);color:var(--noteink);border-radius:8px}
@@ -71,7 +71,7 @@ h1.empty{opacity:.55}
 textarea{width:100%;min-height:110px;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:10px;padding:10px 12px;font-size:16px;resize:vertical}
 .notetext{white-space:pre-wrap;margin:0;font-size:15px}
 .note p.notetext{font:400 14px/1.45 Manrope,system-ui,sans-serif;color:var(--mut)}
-.ask{margin-top:14px;background:var(--bg);border:2px solid var(--cyan);box-shadow:0 0 20px -6px rgba(45,226,230,.6);border-radius:14px;padding:14px}
+.ask{margin-top:14px;background:var(--bg);border:2px solid var(--cyan);border-radius:14px;padding:14px}
 .ask h3{margin:0 0 10px;font-size:18px}
 .thumbs{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .thumbs button{background:var(--col);color:var(--ink);border:1px solid var(--line)}
@@ -83,9 +83,9 @@ textarea{width:100%;min-height:110px;border:1px solid var(--line);background:var
 .how{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin:0;padding:0;list-style:none;counter-reset:s}
 .how li{background:var(--col);border-radius:14px;padding:16px}
 .how b{display:block;font-size:17px;margin-bottom:4px}
-.how .tm{font:800 20px/1 Unbounded,Manrope,sans-serif;color:var(--acc)}
+.how .tm{font:800 20px/1 Unbounded,Manrope,sans-serif;color:var(--brown)}
 .how p{margin:6px 0 0;font-size:15px;color:var(--mut)}
-.share{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:14px;font-size:14px;color:#ffe3f1}.share code{background:var(--glass);color:var(--barink);padding:8px 10px;border-radius:8px;font-size:13px;overflow-wrap:anywhere;max-width:100%}.share button{background:var(--acc);color:var(--noteink);min-height:38px}
+.share{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:14px;font-size:14px;color:#4a2a5e}.share code{background:var(--glass);color:var(--barink);padding:8px 10px;border-radius:8px;font-size:13px;overflow-wrap:anywhere;max-width:100%}.share button{background:#2a1238;color:#fff;min-height:38px}
 .msg{max-width:640px;margin:40px auto;text-align:center;font-size:18px}
 .small{font-size:13px;color:var(--mut);margin-top:18px}
 @media(max-width:900px){.board{grid-template-columns:minmax(0,1fr)}.how{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
@@ -167,7 +167,7 @@ function card(t,mode){
   const m=tally(),n=m[t.id]||0;let meta='';
   if(mode==='topics'){meta=t.by===myUid||host?`<span></span><button class="mini x" data-a="del" data-id="${esc(t.id)}">Удалить</button>`:''}
   else if(mode==='vote'){const p=myPicks(),k=p[t.id]||0,full=used(p)>=VOTES;
-    meta=`<span class="dots" aria-label="Ваших голосов: ${k}">${Array.from({length:VOTES},(_,i)=>`<i class="dot${i<k?'':' o'}"></i>`).join('')}</span>
+    meta=`<span class="dots" aria-label="Ваших голосов: ${k}">${Array.from({length:VOTES},(_,i)=>`<i class="dot${i<k?'':' o'}"></i>`).join('')}<span class="tot">всего ${n}</span></span>
     <span class="acts"><button class="mini" data-a="vm" data-id="${esc(t.id)}" ${k?'':'disabled'} aria-label="Убрать голос">−</button><button class="mini" data-a="vp" data-id="${esc(t.id)}" ${full?'disabled':''} aria-label="Добавить голос">+</button></span>`}
   else if(mode==='todo'){meta=`<span>${n} ${plural(n)}</span>${host?`<button class="mini" data-a="pick" data-id="${esc(t.id)}">Обсудить сейчас</button>`:''}`}
   const isNew=!seen.has(t.id);seen.add(t.id);
@@ -195,7 +195,7 @@ function view(){
   const share=host?`<div class="share"><span>Ссылка для участников</span><code>${esc(link)}</code><button data-a="link">${copied==='link'?'Скопировано':'Копировать'}</button></div>`:'';
   const head=`<header class="bar band"><div class="wrap"><div class="top"><div><div class="kick">Lean Coffee · в комнате ${online()}</div>
     ${host&&ph==='intro'?`<input id="theme" class="themein" maxlength="120" placeholder="Общая тема встречи" value="${esc(B.theme)}" aria-label="Общая тема встречи">`:`<h1 class="${B.theme?'':'empty'}">${esc(B.theme||'Общая тема не задана')}</h1>`}${share}</div>
-    <div class="timer"><div class="ring ${rc}" id="ring"><svg viewBox="0 0 132 132" aria-hidden="true"><circle cx="66" cy="66" r="58" fill="none" stroke="rgba(20,6,40,.45)" stroke-width="10"/><circle id="arc" cx="66" cy="66" r="58" fill="none" stroke="${rc?'#ff3e9a':'#2de2e6'}" stroke-width="10" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${off}"/></svg><div class="t" id="tm" role="timer">${dur?fmt(r):'—'}</div></div>
+    <div class="timer"><div class="ring ${rc}" id="ring"><svg viewBox="0 0 132 132" aria-hidden="true"><circle cx="66" cy="66" r="58" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="10"/><circle id="arc" cx="66" cy="66" r="58" fill="none" stroke="${rc?'#e0307c':'#0fa9ad'}" stroke-width="10" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${off}"/></svg><div class="t" id="tm" role="timer">${dur?fmt(r):'—'}</div></div>
     ${host&&dur?`<div class="tctl">${B.endsAt?`<button data-a="pause">Пауза</button>`:`<button data-a="resume">Пуск</button>`}<button data-a="plus">+1 мин</button><button data-a="stop">Стоп</button></div>`:''}</div></div>
     <ol class="steps">${PH.map((p,i)=>`<li class="${i===idx?'on':i<idx?'past':''}">${p[1]}</li>`).join('')}</ol></div></header>`;
   const left=VOTES-used(myPicks());
@@ -260,7 +260,7 @@ app.addEventListener('change',e=>{if(e.target.id==='theme'&&host){const v=e.targ
 app.addEventListener('input',e=>{if(e.target.id!=='note'||!host)return;const id=e.target.dataset.id,v=e.target.value.slice(0,1000);clearTimeout(noteTimer);
   noteTimer=setTimeout(()=>setB(p=>p.topics[id]?{...p,topics:{...p.topics,[id]:{...p.topics[id],note:v}}}:p),600)});
 setInterval(()=>{if(!B||!B.sid)return;const r=rem(),tm=document.getElementById('tm'),arc=document.getElementById('arc'),ring=document.getElementById('ring');
-  if(tm&&B.dur){tm.textContent=fmt(r);arc.setAttribute('stroke-dashoffset',String(2*Math.PI*58*(1-r/B.dur)));const c=r===0?'zero':r<=60?'low':'';ring.className='ring '+c;arc.setAttribute('stroke',c?'#ff3e9a':'#2de2e6')}
+  if(tm&&B.dur){tm.textContent=fmt(r);arc.setAttribute('stroke-dashoffset',String(2*Math.PI*58*(1-r/B.dur)));const c=r===0?'zero':r<=60?'low':'';ring.className='ring '+c;arc.setAttribute('stroke',c?'#e0307c':'#0fa9ad')}
   if(lastRem!==null&&lastRem>0&&r===0){lastHtml='';render()}lastRem=r},250);
 
 /* ---------- connect ---------- */
@@ -268,11 +268,11 @@ render();
 (async()=>{
   try{
     const r=new URLSearchParams(location.search).get('r');
-    room=r?joinRoom({appId:APP,use:[roles()]},r):joinRoom({appId:APP,use:[roles({selfAsAdmin:true})]},rid());
+    const qs=new URLSearchParams(location.search);room=r?joinRoom({appId:APP,use:[roles()],...(qs.has('guest')?{identity:'none'}:{})},r):joinRoom({appId:APP,use:[roles({selfAsAdmin:true})]},rid());
     room.onError(e=>{console.warn(e);if(e&&e.code==='room-full'){err='Комната заполнена.';render()}});
     const self=await room.getSelf();myUid=self.userId;host=!!self.isAdmin;
     link=location.origin+location.pathname+'?r='+encodeURIComponent(self.roomId);
-    if(!r)history.replaceState(null,'','?r='+encodeURIComponent(self.roomId));
+    link=link;if(!r)history.replaceState(null,'','?r='+encodeURIComponent(self.roomId));
     board=room.makeState('board',null,{maxBytes:65536});
     mine=room.makeUserState('mine',null,{maxBytes:16384});
     board.onChange(v=>{const ch=!B||!v||B.sid!==v.sid||B.phase!==v.phase||B.topicId!==v.topicId||B.ext!==v.ext;B=v;render();if(host&&ch)mergeAll()},{replay:true});
